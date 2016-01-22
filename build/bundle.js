@@ -19662,14 +19662,14 @@
 	  displayName: 'exports',
 
 	  getInitialState: function getInitialState() {
-	    return { position: 100, currentFloor: 0 };
+	    return { position: 100, currentFloor: 0, upColor: 'black', downColor: 'black' };
 	  },
 
 	  changeFloor: function changeFloor(newFloor) {
-	    var time = this.state.currentFloor + 1 * 100 - (newFloor + 1 * 100);
-	    time = Math.abs(time);
+	    var time = this.state.currentFloor - newFloor;
+	    time = Math.abs(time) * 1000;
 	    this.counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time);
-	    this.setState({ currentFloor: newFloor + 1 });
+	    this.setState({ currentFloor: newFloor });
 	  },
 
 	  counter: function counter(start, end, time) {
@@ -19679,17 +19679,25 @@
 	    if (timeForEach < 0) {
 
 	      timeForEach = timeForEach * -1;
+	      this.setState({ downColor: 'white' });
 	      var timer = setInterval(function () {
 	        start--;
 	        this.setState({ position: start });
-	        if (start === end) clearInterval(timer);
+	        if (start <= end) {
+	          clearInterval(timer);
+	          this.setState({ downColor: 'black' });
+	        };
 	      }.bind(this), timeForEach);
 	    } else {
 
+	      this.setState({ upColor: 'white' });
 	      var timer = setInterval(function () {
 	        start++;
 	        this.setState({ position: start });
-	        if (start === end) clearInterval(timer);
+	        if (start >= end) {
+	          this.setState({ upColor: 'black' });
+	          clearInterval(timer);
+	        }
 	      }.bind(this), timeForEach);
 	    }
 	  },
@@ -19708,7 +19716,7 @@
 	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 2 }),
 	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 1 }),
 	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 0 }),
-	      React.createElement(Elevator, { position: this.state.position })
+	      React.createElement(Elevator, this.state)
 	    );
 	  }
 	});
@@ -19764,6 +19772,18 @@
 	module.exports = React.createClass({
 	  displayName: 'exports',
 
+	  upStyle: function upStyle() {
+	    return {
+	      color: this.props.upColor
+	    };
+	  },
+
+	  downStyle: function downStyle() {
+	    return {
+	      color: this.props.downColor
+	    };
+	  },
+
 	  elevatorStyles: function elevatorStyles() {
 	    return {
 	      backgroundColor: 'red',
@@ -19779,7 +19799,19 @@
 	    return React.createElement(
 	      'div',
 	      { style: this.elevatorStyles() },
-	      '^ V'
+	      React.createElement(
+	        'span',
+	        { style: this.upStyle() },
+	        '^'
+	      ),
+	      ' ',
+	      React.createElement(
+	        'span',
+	        { style: this.downStyle() },
+	        'V'
+	      ),
+	      ' ',
+	      this.props.currentFloor
 	    );
 	  }
 	});
