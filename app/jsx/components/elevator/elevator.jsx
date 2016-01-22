@@ -25,10 +25,14 @@ module.exports = React.createClass({
     };
   },
 
+  changingFloor: function() {
+    return Math.round(this.props.position/100) - 1;
+  },
+
   render: function() {
     return (
       <div style={this.elevatorStyles()}>
-      <span style={this.upStyle()}>^</span> <span style={this.downStyle()}>V</span> {this.props.currentFloor}
+      <span style={this.upStyle()}>^</span> <span style={this.downStyle()}>V</span>{this.changingFloor()} {this.props.currentFloor};
       </div>
     );
   }
