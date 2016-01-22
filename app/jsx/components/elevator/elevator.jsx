@@ -32,7 +32,7 @@ module.exports = React.createClass({
   render: function() {
     return (
       <div style={this.elevatorStyles()}>
-      <span style={this.upStyle()}>^</span> <span style={this.downStyle()}>V</span>{this.changingFloor()} {this.props.currentFloor};
+      <span style={this.upStyle()}>^</span> <span style={this.downStyle()}>V</span>{this.changingFloor()} {this.props.currentFloor}
       </div>
     );
   }
