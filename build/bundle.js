@@ -19653,19 +19653,45 @@
 
 	'use strict';
 
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
 	var React = __webpack_require__(1);
 	var ReactDOM = __webpack_require__(158);
 	var Floor = __webpack_require__(160);
-	var Elevator = __webpack_require__(161);
+	var EndFloor = __webpack_require__(161);
+	var Elevator = __webpack_require__(162);
+	var StatsIndicator = __webpack_require__(163);
+	var ElevatorPanel = __webpack_require__(164);
 
 	module.exports = React.createClass({
 	  displayName: 'exports',
 
 	  getInitialState: function getInitialState() {
-	    return { position: 100, currentFloor: 0, upColor: 'black', downColor: 'black' };
+	    return { position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: [] };
+	  },
+
+	  backlogHandler: function backlogHandler(floor) {
+
+	    var backlog = this.state.backlog;
+	    backlog.push(floor);
+	    this.setState({ backlog: backlog });
+
+	    var timer = setInterval(function () {
+	      console.log('waiting', this.state.backlog);
+	      if (this.state.moving === false) {
+	        this.changeFloor(backlog.shift());
+	        this.setState({ backlog: backlog });
+	        clearInterval(timer);
+	      }
+	    }.bind(this), 1000);
 	  },
 
 	  changeFloor: function changeFloor(newFloor) {
+
+	    if (this.state.moving === true) {
+	      return this.backlogHandler(newFloor);
+	    }
+
 	    var time = this.state.currentFloor - newFloor;
 	    time = Math.abs(time) * 1000;
 	    this.counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time);
@@ -19673,6 +19699,8 @@
 	  },
 
 	  counter: function counter(start, end, time) {
+
+	    this.setState({ moving: true });
 	    var difference = end - start;
 	    var timeForEach = time / difference;
 
@@ -19683,10 +19711,16 @@
 	      var timer = setInterval(function () {
 	        start--;
 	        this.setState({ position: start });
+
 	        if (start <= end) {
+
 	          clearInterval(timer);
 	          this.setState({ downColor: 'black' });
-	        };
+
+	          setTimeout(function () {
+	            this.setState({ moving: false });
+	          }.bind(this), 3000);
+	        }
 	      }.bind(this), timeForEach);
 	    } else {
 
@@ -19694,9 +19728,16 @@
 	      var timer = setInterval(function () {
 	        start++;
 	        this.setState({ position: start });
+
 	        if (start >= end) {
-	          this.setState({ upColor: 'black' });
+
 	          clearInterval(timer);
+
+	          this.setState({ upColor: 'black' });
+
+	          setTimeout(function () {
+	            this.setState({ moving: false });
+	          }.bind(this), 3000);
 	        }
 	      }.bind(this), timeForEach);
 	    }
@@ -19706,17 +19747,19 @@
 	    return React.createElement(
 	      'section',
 	      null,
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 9 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 8 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 7 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 6 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 5 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 4 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 3 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 2 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 1 }),
-	      React.createElement(Floor, { changeFloor: this.changeFloor, level: 0 }),
-	      React.createElement(Elevator, this.state)
+	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 9 }, this.state, { button: 'DOWN' })),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 8 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 7 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 6 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 5 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 4 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 3 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 2 }, this.state)),
+	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 1 }, this.state)),
+	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 0 }, this.state, { button: 'UP' })),
+	      React.createElement(Elevator, this.state),
+	      React.createElement(StatsIndicator, this.state),
+	      React.createElement(ElevatorPanel, _extends({}, this.state, { changeFloor: this.changeFloor }))
 	    );
 	  }
 	});
@@ -19747,7 +19790,12 @@
 	      React.createElement(
 	        'button',
 	        { onClick: this.pressButton, type: 'submit' },
-	        'Change Floor'
+	        'UP'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        'DOWN'
 	      )
 	    );
 	  }
@@ -19762,6 +19810,45 @@
 
 /***/ },
 /* 161 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(158);
+
+	module.exports = React.createClass({
+	  displayName: 'exports',
+
+	  pressButton: function pressButton(e) {
+	    e.preventDefault();
+	    this.props.changeFloor(this.props.level);
+	  },
+
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { style: floorStyle },
+	      'Floor ',
+	      this.props.level,
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        this.props.button
+	      )
+	    );
+	  }
+	});
+
+	var floorStyle = {
+	  width: '100%',
+	  height: 98,
+	  backgroundColor: 'grey',
+	  border: 'solid black 1px'
+	};
+
+/***/ },
+/* 162 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -19795,6 +19882,10 @@
 	    };
 	  },
 
+	  changingFloor: function changingFloor() {
+	    return Math.round(this.props.position / 100) - 1;
+	  },
+
 	  render: function render() {
 	    return React.createElement(
 	      'div',
@@ -19810,11 +19901,137 @@
 	        { style: this.downStyle() },
 	        'V'
 	      ),
+	      this.changingFloor(),
 	      ' ',
 	      this.props.currentFloor
 	    );
 	  }
 	});
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(158);
+
+	module.exports = React.createClass({
+	  displayName: 'exports',
+
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { style: statStyles },
+	      React.createElement(
+	        'span',
+	        null,
+	        'Up Next: ',
+	        this.props.currentFloor
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'span',
+	        null,
+	        'Backlog:  ',
+	        this.props.backlog.join(', ')
+	      )
+	    );
+	  }
+	});
+
+	var statStyles = {
+	  position: 'fixed',
+	  top: 0,
+	  right: 10,
+	  backgroundColor: '#F5F5DC'
+	};
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(158);
+
+	module.exports = React.createClass({
+	  displayName: 'exports',
+
+	  pressButton: function pressButton(e) {
+	    e.preventDefault();
+	    this.props.changeFloor(e.target.innerHTML);
+	  },
+
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { style: panelStyles },
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '0'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '1'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '2'
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '3'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '4'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '5'
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '6'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '7'
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '8'
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'button',
+	        { onClick: this.pressButton, type: 'submit' },
+	        '9'
+	      )
+	    );
+	  }
+	});
+
+	var panelStyles = {
+	  position: 'fixed',
+	  bottom: 0,
+	  right: 10,
+	  backgroundColor: '#F5F5DC'
+	};
 
 /***/ }
 /******/ ]);
