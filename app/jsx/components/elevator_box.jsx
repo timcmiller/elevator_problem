@@ -1,8 +1,10 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Floor = require(__dirname + '/floor/floor.jsx');
+var EndFloor = require(__dirname +'/end_floor/end_floor.jsx');
 var Elevator = require(__dirname + '/elevator/elevator.jsx');
 var StatsIndicator = require(__dirname + '/stats_indicator/stats_indicator.jsx');
+var ElevatorPanel = require(__dirname + '/elevator_panel/elevator_panel.jsx');
 
 module.exports = React.createClass({
 
@@ -73,6 +75,7 @@ module.exports = React.createClass({
         if(start >= end) {
 
           clearInterval(timer);
+
           this.setState({upColor: 'black'});
 
           setTimeout(function() {
@@ -88,7 +91,7 @@ module.exports = React.createClass({
   render: function() {
     return (
       <section>
-        <Floor changeFloor={this.changeFloor} level={9} {...this.state} />
+        <EndFloor changeFloor={this.changeFloor} level={9} {...this.state} button={'DOWN'} />
         <Floor changeFloor={this.changeFloor} level={8} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={7} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={6} {...this.state} />
@@ -97,9 +100,10 @@ module.exports = React.createClass({
         <Floor changeFloor={this.changeFloor} level={3} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={2} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={1} {...this.state} />
-        <Floor changeFloor={this.changeFloor} level={0} {...this.state} />
+        <EndFloor changeFloor={this.changeFloor} level={0} {...this.state} button={'UP'} />
         <Elevator {...this.state} />
         <StatsIndicator {...this.state} />
+        <ElevatorPanel {...this.state} changeFloor={this.changeFloor} />
       </section>
     );
   }
