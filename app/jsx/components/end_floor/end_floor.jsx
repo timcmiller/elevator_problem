@@ -12,8 +12,7 @@ module.exports = React.createClass({
     return (
       <div style={floorStyle}>
         Floor {this.props.level}
-        <button onClick={this.pressButton} type="submit">UP</button>
-        <button onClick={this.pressButton} type="submit">DOWN</button>
+        <button onClick={this.pressButton} type="submit">{this.props.button}</button>
       </div>
     )
   }
