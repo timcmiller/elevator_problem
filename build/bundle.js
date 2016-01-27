@@ -19662,6 +19662,8 @@
 	var Elevator = __webpack_require__(162);
 	var StatsIndicator = __webpack_require__(163);
 	var ElevatorPanel = __webpack_require__(164);
+	var Person = __webpack_require__(165);
+	var counter = __webpack_require__(166);
 
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -19694,60 +19696,15 @@
 
 	    var time = this.state.currentFloor - newFloor;
 	    time = Math.abs(time) * 1000;
-	    this.counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time);
-	    this.setState({ currentFloor: newFloor });
-	  },
-
-	  counter: function counter(start, end, time) {
-
-	    this.setState({ moving: true });
-	    var difference = end - start;
-	    var timeForEach = time / difference;
-
-	    if (timeForEach < 0) {
-
-	      timeForEach = timeForEach * -1;
-	      this.setState({ downColor: 'white' });
-	      var timer = setInterval(function () {
-	        start--;
-	        this.setState({ position: start });
-
-	        if (start <= end) {
-
-	          clearInterval(timer);
-	          this.setState({ downColor: 'black' });
-
-	          setTimeout(function () {
-	            this.setState({ moving: false });
-	          }.bind(this), 3000);
-	        }
-	      }.bind(this), timeForEach);
-	    } else {
-
-	      this.setState({ upColor: 'white' });
-	      var timer = setInterval(function () {
-	        start++;
-	        this.setState({ position: start });
-
-	        if (start >= end) {
-
-	          clearInterval(timer);
-
-	          this.setState({ upColor: 'black' });
-
-	          setTimeout(function () {
-	            this.setState({ moving: false });
-	          }.bind(this), 3000);
-	        }
-	      }.bind(this), timeForEach);
-	    }
+	    counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time, this);
+	    this.setState({ currentFloor: newFloor, moving: true });
 	  },
 
 	  render: function render() {
 	    return React.createElement(
 	      'section',
 	      null,
-	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 9 }, this.state, { button: 'DOWN' })),
+	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 9 }, this.state, { button: 'icon-arrow-down2' })),
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 8 }, this.state)),
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 7 }, this.state)),
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 6 }, this.state)),
@@ -19756,10 +19713,11 @@
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 3 }, this.state)),
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 2 }, this.state)),
 	      React.createElement(Floor, _extends({ changeFloor: this.changeFloor, level: 1 }, this.state)),
-	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 0 }, this.state, { button: 'UP' })),
+	      React.createElement(EndFloor, _extends({ changeFloor: this.changeFloor, level: 0 }, this.state, { button: 'icon-arrow-up2' })),
 	      React.createElement(Elevator, this.state),
 	      React.createElement(StatsIndicator, this.state),
-	      React.createElement(ElevatorPanel, _extends({}, this.state, { changeFloor: this.changeFloor }))
+	      React.createElement(ElevatorPanel, _extends({}, this.state, { changeFloor: this.changeFloor })),
+	      React.createElement(Person, _extends({}, this.state, { counter: this.counter }))
 	    );
 	  }
 	});
@@ -19787,16 +19745,11 @@
 	      { style: floorStyle },
 	      'Floor ',
 	      this.props.level,
-	      React.createElement(
-	        'button',
-	        { onClick: this.pressButton, type: 'submit' },
-	        'UP'
-	      ),
-	      React.createElement(
-	        'button',
-	        { onClick: this.pressButton, type: 'submit' },
-	        'DOWN'
-	      )
+	      ' ',
+	      React.createElement('br', null),
+	      React.createElement('button', { onClick: this.pressButton, type: 'submit', className: 'icon-arrow-up2' }),
+	      React.createElement('br', null),
+	      React.createElement('button', { onClick: this.pressButton, type: 'submit', className: 'icon-arrow-down2' })
 	    );
 	  }
 	});
@@ -19831,11 +19784,9 @@
 	      { style: floorStyle },
 	      'Floor ',
 	      this.props.level,
-	      React.createElement(
-	        'button',
-	        { onClick: this.pressButton, type: 'submit' },
-	        this.props.button
-	      )
+	      ' ',
+	      React.createElement('br', null),
+	      React.createElement('button', { onClick: this.pressButton, type: 'submit', className: this.props.button })
 	    );
 	  }
 	});
@@ -19890,17 +19841,9 @@
 	    return React.createElement(
 	      'div',
 	      { style: this.elevatorStyles() },
-	      React.createElement(
-	        'span',
-	        { style: this.upStyle() },
-	        '^'
-	      ),
+	      React.createElement('span', { style: this.upStyle(), className: 'icon-circle-up' }),
 	      ' ',
-	      React.createElement(
-	        'span',
-	        { style: this.downStyle() },
-	        'V'
-	      ),
+	      React.createElement('span', { style: this.downStyle(), className: 'icon-circle-down' }),
 	      this.changingFloor(),
 	      ' ',
 	      this.props.currentFloor
@@ -20031,6 +19974,129 @@
 	  bottom: 0,
 	  right: 10,
 	  backgroundColor: '#F5F5DC'
+	};
+
+/***/ },
+/* 165 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	var React = __webpack_require__(1);
+	var ReactDOM = __webpack_require__(158);
+	var counter = __webpack_require__(166);
+
+	module.exports = React.createClass({
+	  displayName: 'exports',
+
+	  getInitialState: function getInitialState() {
+	    return { gender: Math.round(Math.random()), personPositionY: 200, personPositionX: 100, onElevator: false, targetFloor: 5 };
+	  },
+
+	  componentDidMount: function componentDidMount() {
+	    var timer = setInterval(function () {
+	      if (this.props.position === this.state.personPositionY) {
+	        this.moveOntoElevator();
+	        this.getOffElevator();
+	        clearInterval(timer);
+	      }
+	    }.bind(this), 1000);
+	  },
+
+	  moveOntoElevator: function moveOntoElevator() {
+
+	    counter(this.personStyles().left, 200, 1000, this);
+	  },
+
+	  getOffElevator: function getOffElevator() {
+	    var timer = setInterval(function () {
+
+	      if (this.props.position === this.state.targetFloor * 100 + 100 && this.state.arrived) {
+	        counter(this.personStyles().left, 100, 1000, this);
+	        clearInterval(timer);
+
+	        setTimeout(function () {
+	          this.setState({ display: 'none' });
+	        }.bind(this), 1000);
+	      }
+	    }.bind(this), 1000);
+	  },
+
+	  personStyles: function personStyles() {
+	    return {
+	      fontSize: 48,
+	      height: 100,
+	      display: this.state.display,
+	      position: 'relative',
+	      left: this.state.personPositionX,
+	      bottom: this.state.onElevator ? this.props.position + 50 : this.state.personPositionY + 50
+	    };
+	  },
+
+	  render: function render() {
+	    return React.createElement(
+	      'div',
+	      { style: this.personStyles() },
+	      React.createElement('span', { className: this.state.gender ? "icon-man" : "icon-woman" })
+	    );
+	  }
+	});
+
+/***/ },
+/* 166 */
+/***/ function(module, exports) {
+
+	'use strict';
+
+	module.exports = function (start, end, time, state) {
+
+	  state.setState({ arrived: false });
+	  var difference = end - start;
+	  var timeForEach = time / difference;
+
+	  if (timeForEach < 0) {
+
+	    timeForEach = timeForEach * -1;
+	    state.setState({ downColor: 'white' });
+	    var timer = setInterval(function () {
+	      start--;
+	      state.setState({ position: start, personPositionX: start });
+
+	      if (start <= end) {
+
+	        clearInterval(timer);
+	        state.setState({ downColor: 'black' });
+
+	        setTimeout(function () {
+	          state.setState({ onElevator: !state.state.onElevator, arrived: true });
+	        }.bind(this), 1000);
+
+	        setTimeout(function () {
+	          state.setState({ moving: false });
+	        }.bind(this), 3000);
+	      }
+	    }.bind(this), timeForEach);
+	  } else {
+
+	    state.setState({ upColor: 'white' });
+	    var timer = setInterval(function () {
+	      start++;
+	      state.setState({ position: start, personPositionX: start });
+
+	      if (start >= end) {
+
+	        clearInterval(timer);
+
+	        state.setState({ upColor: 'black' });
+	        setTimeout(function () {
+	          state.setState({ onElevator: !state.state.onElevator, arrived: true });
+	        }.bind(this), 1000);
+	        setTimeout(function () {
+	          state.setState({ moving: false });
+	        }.bind(this), 3000);
+	      }
+	    }.bind(this), timeForEach);
+	  }
 	};
 
 /***/ }
