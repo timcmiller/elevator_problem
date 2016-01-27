@@ -5,12 +5,15 @@ var EndFloor = require(__dirname +'/end_floor/end_floor.jsx');
 var Elevator = require(__dirname + '/elevator/elevator.jsx');
 var StatsIndicator = require(__dirname + '/stats_indicator/stats_indicator.jsx');
 var ElevatorPanel = require(__dirname + '/elevator_panel/elevator_panel.jsx');
+var Person = require(__dirname + '/person/person.jsx');
+var counter = require(__dirname + '/../lib/counter.js');
 
 module.exports = React.createClass({
 
   getInitialState: function() {
     return {position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: []};
   },
+
 
   backlogHandler: function(floor) {
 
@@ -36,62 +39,14 @@ module.exports = React.createClass({
 
     var time = (this.state.currentFloor) - (newFloor);
     time = Math.abs(time) * 1000;
-    this.counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time);
-    this.setState({currentFloor: (newFloor)});
-  },
-
-  counter: function(start, end, time) {
-
-    this.setState({moving: true});
-    var difference = end - start;
-    var timeForEach = time/difference;
-
-    if(timeForEach < 0) {
-
-      timeForEach = timeForEach * -1;
-      this.setState({downColor: 'white'});
-      var timer = setInterval(function() {
-        start--;
-        this.setState({position: start});
-
-        if(start <= end) {
-
-          clearInterval(timer);
-          this.setState({downColor: 'black'});
-
-          setTimeout(function() {
-            this.setState({moving: false});
-          }.bind(this), 3000);
-        }
-
-      }.bind(this), timeForEach);
-    } else {
-
-      this.setState({upColor: 'white'});
-      var timer = setInterval(function() {
-        start++;
-        this.setState({position: start});
-
-        if(start >= end) {
-
-          clearInterval(timer);
-
-          this.setState({upColor: 'black'});
-
-          setTimeout(function() {
-            this.setState({moving: false});
-          }.bind(this), 3000);
-        }
-
-      }.bind(this), timeForEach);
-    }
-
+    counter(this.state.currentFloor * 100 + 100, newFloor * 100 + 100, time, this);
+    this.setState({currentFloor: (newFloor), moving: true});
   },
 
   render: function() {
     return (
       <section>
-        <EndFloor changeFloor={this.changeFloor} level={9} {...this.state} button={'DOWN'} />
+        <EndFloor changeFloor={this.changeFloor} level={9} {...this.state} button={'icon-arrow-down2'} />
         <Floor changeFloor={this.changeFloor} level={8} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={7} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={6} {...this.state} />
@@ -100,10 +55,11 @@ module.exports = React.createClass({
         <Floor changeFloor={this.changeFloor} level={3} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={2} {...this.state} />
         <Floor changeFloor={this.changeFloor} level={1} {...this.state} />
-        <EndFloor changeFloor={this.changeFloor} level={0} {...this.state} button={'UP'} />
+        <EndFloor changeFloor={this.changeFloor} level={0} {...this.state} button={'icon-arrow-up2'} />
         <Elevator {...this.state} />
         <StatsIndicator {...this.state} />
         <ElevatorPanel {...this.state} changeFloor={this.changeFloor} />
+        <Person {...this.state} counter={this.counter} />
       </section>
     );
   }

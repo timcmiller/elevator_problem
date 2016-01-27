@@ -11,9 +11,9 @@ module.exports = React.createClass({
   render: function() {
     return (
       <div style={floorStyle}>
-        Floor {this.props.level}
-        <button onClick={this.pressButton} type="submit">UP</button>
-        <button onClick={this.pressButton} type="submit">DOWN</button>
+        Floor {this.props.level} <br />
+        <button onClick={this.pressButton} type="submit" className="icon-arrow-up2"></button><br />
+        <button onClick={this.pressButton} type="submit" className="icon-arrow-down2"></button>
       </div>
     )
   }
