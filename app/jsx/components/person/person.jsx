@@ -53,8 +53,16 @@ module.exports = React.createClass({
     return (
       <div style={this.personStyles()}>
         <span className={this.state.gender ? "icon-man" : "icon-woman"}></span>
+        {this.state.onElevator ? <p style={text}>Five Please</p> : null}
       </div>
     );
   }
 });
+
+var text = {
+  fontSize: 12,
+  display: 'inline',
+  color: 'white'
+};
+
 

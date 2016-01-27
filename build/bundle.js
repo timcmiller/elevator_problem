@@ -20037,10 +20037,21 @@
 	    return React.createElement(
 	      'div',
 	      { style: this.personStyles() },
-	      React.createElement('span', { className: this.state.gender ? "icon-man" : "icon-woman" })
+	      React.createElement('span', { className: this.state.gender ? "icon-man" : "icon-woman" }),
+	      this.state.onElevator ? React.createElement(
+	        'p',
+	        { style: text },
+	        'Five Please'
+	      ) : null
 	    );
 	  }
 	});
+
+	var text = {
+	  fontSize: 12,
+	  display: 'inline',
+	  color: 'white'
+	};
 
 /***/ },
 /* 166 */
