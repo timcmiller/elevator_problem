@@ -11,7 +11,13 @@ var counter = require(__dirname + '/../lib/counter.js');
 module.exports = React.createClass({
 
   getInitialState: function() {
-    return {position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: []};
+    return {position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: [], people: []};
+  },
+
+  peopleTimer: function() {
+    setInterval(function() {
+      return this.personGenerator();
+    }.bind(this), 15000);
   },
 
 
@@ -43,6 +49,14 @@ module.exports = React.createClass({
     this.setState({currentFloor: (newFloor), moving: true});
   },
 
+  personGenerator: function() {
+    console.log('new person');
+    var startingFloor = Math.floor(Math.random() * (10));
+    var targetFloor = Math.floor(Math.random() * (10));
+    if(startingFloor === targetFloor) targetFloor = 0;
+    return (<Person {...this.state} targetFloor={targetFloor} startingFloor={startingFloor}/>);
+  },
+
   render: function() {
     return (
       <section>
@@ -59,7 +73,7 @@ module.exports = React.createClass({
         <Elevator {...this.state} />
         <StatsIndicator {...this.state} />
         <ElevatorPanel {...this.state} changeFloor={this.changeFloor} />
-        <Person {...this.state} counter={this.counter} />
+        {this.peopleTimer()}
       </section>
     );
   }

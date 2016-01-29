@@ -19669,7 +19669,13 @@
 	  displayName: 'exports',
 
 	  getInitialState: function getInitialState() {
-	    return { position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: [] };
+	    return { position: 100, currentFloor: 0, upColor: 'black', downColor: 'black', moving: false, backlog: [], people: [] };
+	  },
+
+	  peopleTimer: function peopleTimer() {
+	    setInterval(function () {
+	      return this.personGenerator();
+	    }.bind(this), 15000);
 	  },
 
 	  backlogHandler: function backlogHandler(floor) {
@@ -19700,6 +19706,14 @@
 	    this.setState({ currentFloor: newFloor, moving: true });
 	  },
 
+	  personGenerator: function personGenerator() {
+	    console.log('new person');
+	    var startingFloor = Math.floor(Math.random() * 10);
+	    var targetFloor = Math.floor(Math.random() * 10);
+	    if (startingFloor === targetFloor) targetFloor = 0;
+	    return React.createElement(Person, _extends({}, this.state, { targetFloor: targetFloor, startingFloor: startingFloor }));
+	  },
+
 	  render: function render() {
 	    return React.createElement(
 	      'section',
@@ -19717,7 +19731,7 @@
 	      React.createElement(Elevator, this.state),
 	      React.createElement(StatsIndicator, this.state),
 	      React.createElement(ElevatorPanel, _extends({}, this.state, { changeFloor: this.changeFloor })),
-	      React.createElement(Person, _extends({}, this.state, { counter: this.counter }))
+	      'this.peopleTimer()'
 	    );
 	  }
 	});
@@ -19990,7 +20004,7 @@
 	  displayName: 'exports',
 
 	  getInitialState: function getInitialState() {
-	    return { gender: Math.round(Math.random()), personPositionY: 200, personPositionX: 100, onElevator: false, targetFloor: 5 };
+	    return { gender: Math.round(Math.random()), personPositionY: this.props.startingFloor, personPositionX: 100, onElevator: false };
 	  },
 
 	  componentDidMount: function componentDidMount() {
@@ -20011,7 +20025,7 @@
 	  getOffElevator: function getOffElevator() {
 	    var timer = setInterval(function () {
 
-	      if (this.props.position === this.state.targetFloor * 100 + 100 && this.state.arrived) {
+	      if (this.props.position === this.props.targetFloor * 100 + 100 && this.state.arrived) {
 	        counter(this.personStyles().left, 100, 1000, this);
 	        clearInterval(timer);
 

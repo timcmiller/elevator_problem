@@ -4,7 +4,7 @@ var counter = require(__dirname + '/../../lib/counter.js');
 
 module.exports = React.createClass({
   getInitialState: function() {
-    return {gender: Math.round(Math.random()), personPositionY: 200, personPositionX: 100, onElevator: false, targetFloor: 5};
+    return {gender: Math.round(Math.random()), personPositionY: this.props.startingFloor, personPositionX: 100, onElevator: false};
   },
 
   componentDidMount: function() {
@@ -26,7 +26,7 @@ module.exports = React.createClass({
   getOffElevator: function() {
     var timer = setInterval(function() {
 
-      if(this.props.position === this.state.targetFloor * 100 + 100 && this.state.arrived) {
+      if(this.props.position === this.props.targetFloor * 100 + 100 && this.state.arrived) {
         counter(this.personStyles().left, 100, 1000, this);
         clearInterval(timer);
 
